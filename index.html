@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DJK Déménagement – Devis & Factures</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/pdf.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><img id="brandLogo" alt="DJK"><span>Gestion des devis</span></div>
+  <nav>
+    <button data-view="devis">Devis</button>
+    <button data-view="factures">Factures</button>
+    <button data-view="lettres">Lettres de voiture</button>
+    <button data-view="clients">Clients</button>
+    <button data-view="agenda">Agenda</button>
+    <button data-view="settings">Réglages</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- LISTE DES DEVIS -->
+  <section id="view-devis" class="view">
+    <div class="bar"><h1>Devis</h1>
+      <input type="search" id="qDevis" placeholder="Rechercher un client, un numéro…">
+      <button class="btn" id="newDevisMm">+ Devis monte-meuble</button>
+      <button class="btn primary" id="newDevis">+ Devis déménagement</button></div>
+    <div class="card"><table id="devisTable"></table></div>
+  </section>
+
+  <!-- EDITION DEVIS -->
+  <section id="view-devisEdit" class="view hidden">
+    <div class="bar"><h1 id="devisTitle">Nouveau devis</h1>
+      <button class="btn" data-go="devis">Retour</button>
+      <button class="btn" id="dPreview">Aperçu</button>
+      <button class="btn" id="dPdf">Télécharger le PDF</button>
+      <button class="btn primary" id="dSave">Enregistrer</button></div>
+
+    <form id="devisForm" autocomplete="off" onsubmit="return false">
+      <div class="card">
+        <h2>Devis</h2>
+        <div class="grid">
+          <label>Type de prestation<select name="kind"><option value="demenagement">Déménagement</option><option value="mm">Monte-meuble</option></select></label>
+          <label>Numéro (automatique)<input name="number"></label>
+          <label>Date du devis<input type="date" name="date"></label>
+          <label>Valable jusqu'au<input type="date" name="valid"></label>
+          <label>Statut
+            <select name="statut"><option>En attente</option><option>Accepté</option><option>Refusé</option></select></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Client</h2>
+        <div class="grid">
+          <label>Civilité<select name="civ"><option>M.</option><option>Mme</option><option>Société</option></select></label>
+          <label class="w2">Nom et prénom<input name="clientName" list="clientList" placeholder="Tape un nom : un client connu se remplit tout seul"></label>
+          <label>Téléphone<input name="clientTel"></label>
+          <label>Email<input type="email" name="clientEmail"></label>
+          <label class="w2">Adresse du client<input class="addr" name="clientAddress"></label>
+          <label class="w2 hidden" id="dSiretWrap">SIRET de l'entreprise<span class="inline"><input name="clientSiret" inputmode="numeric" placeholder="14 chiffres : le nom et l'adresse se remplissent seuls"><button type="button" class="btn small" data-siret>Rechercher</button></span></label>
+        </div>
+        <datalist id="clientList"></datalist>
+      </div>
+
+      <div class="card" data-kind="demenagement">
+        <h2>Prestation</h2>
+        <div class="grid">
+          <label>Catégorie<select name="categorie"><option>LUXE</option><option>STANDARD</option><option>ÉCONOMIQUE</option><option>ÉCONOMIQUE PLUS</option></select></label>
+          <label>Volume (m³)<input type="number" step="0.5" min="0" name="volume"></label>
+          <label>Voyage<select name="voyage"><option>NATIONAL</option><option>INTERNATIONAL</option><option>LOCAL</option></select></label>
+          <label>Distance (km)
+            <span class="inline"><input type="number" min="0" step="any" name="distance"><button type="button" class="btn small" id="btnKm">Calculer</button></span></label>
+          <label class="switch"><input type="checkbox" name="visited"><i></i>Visite effectuée</label>
+          <label>Visité par<input name="visitedBy"></label>
+          <label>Visité le<input type="date" name="visitedDate"></label>
+        </div>
+      </div>
+
+      <div class="card" data-kind="mm"><h2>Monte-meuble</h2><div class="grid" id="mmBox"></div></div>
+
+      <div class="two" data-kind="demenagement">
+        <div class="card"><h2>Chargement</h2><div class="grid g2" id="accFrom"></div></div>
+        <div class="card"><h2>Livraison</h2><div class="grid g2" id="accTo"></div></div>
+      </div>
+
+      <div class="card" data-kind="demenagement">
+        <h2>Mobilier et particularités</h2>
+        <div class="grid">
+          <label class="w2">Mobilier à transporter (un élément par ligne)<textarea name="mobilier" rows="5"></textarea></label>
+          <label class="w2">Particularité<textarea name="particularite" rows="5" placeholder="ex : accès poids lourd"></textarea></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Prix</h2>
+        <div class="grid">
+          <label>Prix HT (€)<input type="number" step="0.01" min="0" name="prixHT"></label>
+          <label class="switch"><input type="checkbox" name="garantie"><i></i>Garantie dommage sans franchise</label>
+          <label class="switch"><input type="checkbox" name="sansTva"><i></i>Paiement sans TVA (le prix saisi est le prix à payer)</label>
+          <label class="w2 hidden" id="dPayWrap">Règlement (entreprise)<select name="paiement"><option value="acompte">Acompte à la commande, solde à la prestation</option><option value="unique">Pas d'acompte : règlement en une fois le jour de la prestation</option></select></label>
+        </div>
+        <div id="dTotals" class="totals"></div>
+      </div>
+    </form>
+  </section>
+
+  <!-- LISTE DES FACTURES -->
+  <section id="view-factures" class="view hidden">
+    <div class="bar"><h1>Factures</h1>
+      <input type="search" id="qFact" placeholder="Rechercher…">
+      <button class="btn primary" id="newFact">+ Nouvelle facture</button></div>
+    <div class="card"><table id="factTable"></table></div>
+  </section>
+
+  <!-- EDITION FACTURE -->
+  <section id="view-facturesEdit" class="view hidden">
+    <div class="bar"><h1 id="factTitle">Nouvelle facture</h1>
+      <button class="btn" data-go="factures">Retour</button>
+      <button class="btn" id="fPreview">Aperçu</button>
+      <button class="btn" id="fPdf">Télécharger le PDF</button>
+      <button class="btn primary" id="fSave">Enregistrer</button></div>
+
+    <form id="factForm" autocomplete="off" onsubmit="return false">
+      <div id="factInfo" class="notice hidden"></div>
+      <div class="card">
+        <h2>Facture</h2>
+        <div class="grid">
+          <label>Type de facture<select name="kind"><option value="complete">Facture complète</option><option value="acompte">Facture d'acompte</option><option value="solde">Facture de solde</option></select></label>
+          <label>Numéro (automatique)<input name="number"></label>
+          <label>Date de facture<input type="date" name="date"></label>
+          <label>Statut<select name="statut"><option>À payer</option><option>Payée</option></select></label>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Facturé à</h2>
+        <div class="grid">
+          <label>Type<select name="type"><option value="particulier">Particulier</option><option value="entreprise">Entreprise</option></select></label>
+          <label class="w2">Nom / Société<input name="clientName" list="clientList"></label>
+          <label id="siretWrap" class="w2">SIRET<span class="inline"><input name="clientSiret" inputmode="numeric" placeholder="14 chiffres"><button type="button" class="btn small" data-siret>Rechercher</button></span></label>
+          <label class="w2">Adresse<input class="addr" name="clientAddress"></label>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Prestations</h2>
+        <div id="lines"></div>
+        <button type="button" class="btn small" id="addLine">+ Ajouter une ligne</button>
+        <label class="switch" style="margin-top:14px"><input type="checkbox" name="sansTva"><i></i>Paiement sans TVA (le prix saisi est le prix à payer)</label>
+        <label style="max-width:320px;margin-top:14px">Acompte déjà réglé (€ TTC, facultatif)<input type="number" step="0.01" min="0" name="acompte" placeholder="ex : 262,80"></label>
+        <div id="fTotals" class="totals"></div>
+      </div>
+    </form>
+  </section>
+
+  <!-- LISTE DES LETTRES DE VOITURE -->
+  <section id="view-lettres" class="view hidden">
+    <div class="bar"><h1>Lettres de voiture</h1>
+      <input type="search" id="qLettre" placeholder="Rechercher un client, un numéro…">
+      <button class="btn primary" id="newLettre">+ Nouvelle lettre de voiture</button></div>
+    <div class="card"><table id="lettreTable"></table></div>
+  </section>
+
+  <!-- EDITION LETTRE DE VOITURE -->
+  <section id="view-lettresEdit" class="view hidden">
+    <div class="bar"><h1 id="lettreTitle">Nouvelle lettre de voiture</h1>
+      <button class="btn" data-go="lettres">Retour</button>
+      <button class="btn" id="lPreview">Aperçu</button>
+      <button class="btn" id="lPdf">Télécharger le PDF</button>
+      <button class="btn primary" id="lSave">Enregistrer</button></div>
+
+    <form id="lettreForm" autocomplete="off" onsubmit="return false">
+      <div class="card">
+        <h2>Lettre de voiture</h2>
+        <div class="grid">
+          <label>Numéro (automatique, sert aussi de n° de dossier)<input name="number"></label>
+          <label>Date<input type="date" name="date"></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Client</h2>
+        <div class="grid">
+          <label>Civilité<select name="civ"><option>M.</option><option>Mme</option><option>Société</option></select></label>
+          <label class="w2">Nom et prénom / Société<input name="clientName" list="clientList" placeholder="Tape un nom : un client connu se remplit tout seul"></label>
+          <label>Téléphone<input name="clientTel"></label>
+          <label class="w2 hidden" id="lSiretWrap">SIRET de l'entreprise<span class="inline"><input name="clientSiret" inputmode="numeric" placeholder="14 chiffres : le nom et l'adresse se remplissent seuls"><button type="button" class="btn small" data-siret>Rechercher</button></span></label>
+          <label class="w2">Adresse du client<input class="addr" name="clientAddress"></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Transport</h2>
+        <div class="grid">
+          <label>Catégorie<select name="categorie"><option>LUXE</option><option>STANDARD</option><option>ÉCONOMIQUE</option><option>ÉCONOMIQUE PLUS</option></select></label>
+          <label>Volume (m³)<input type="number" step="0.5" min="0" name="volume"></label>
+          <label>Voyage<select name="voyage"><option>NATIONAL</option><option>INTERNATIONAL</option><option>LOCAL</option></select></label>
+          <label>Mode d'exécution<input name="mode"></label>
+          <label>Distance (km)
+            <span class="inline"><input type="number" min="0" step="any" name="distance"><button type="button" class="btn small" id="btnKmL">Calculer</button></span></label>
+          <label>Trajet hors Île-de-France (2 exemplaires + 3 signatures)<select name="horsIdf"><option value="">Automatique (selon les adresses)</option><option value="oui">Oui, toujours</option><option value="non">Non, jamais</option></select></label>
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="card"><h2>Chargement</h2><div class="grid g2">
+          <label>Date<input type="date" name="from.periode"></label>
+          <label class="wide" style="position:relative">Adresse<input class="addr" name="from.adresse" placeholder="Tape l'adresse, choisis dans la liste"></label>
+          <label>Étage<input name="from.etage" placeholder="ex : 3, RDC"></label>
+          <input type="hidden" name="from.lat"><input type="hidden" name="from.lon"></div></div>
+        <div class="card"><h2>Livraison</h2><div class="grid g2">
+          <label>Date<input type="date" name="to.periode"></label>
+          <label class="wide" style="position:relative">Adresse<input class="addr" name="to.adresse" placeholder="Tape l'adresse, choisis dans la liste"></label>
+          <label>Étage<input name="to.etage" placeholder="ex : 3, RDC"></label>
+          <input type="hidden" name="to.lat"><input type="hidden" name="to.lon"></div></div>
+      </div>
+
+      <div class="card">
+        <h2>Prix, acompte et garantie</h2>
+        <div class="grid">
+          <label>Prix HT (€)<input type="number" step="0.01" min="0" name="prixHT"></label>
+          <label>Mode de paiement<select name="reglement"><option value="facture">Virement / carte (avec facture)</option><option value="especes">Espèces (pas de facture) : prix TTC sur la lettre</option></select></label>
+          <label>Acompte versé (€) — vide = calcul automatique (aucun si espèces)<input type="number" step="0.01" min="0" name="acompteVerse"></label>
+          <label class="switch"><input type="checkbox" name="garantie"><i></i>Garantie dommage sans franchise</label>
+          <label class="switch"><input type="checkbox" name="sansTva"><i></i>Paiement sans TVA (le prix saisi est le prix à payer)</label>
+          <label class="w2 hidden" id="lPayWrap">Règlement (entreprise)<select name="paiement"><option value="acompte">Acompte à la commande, solde à la prestation</option><option value="unique">Pas d'acompte : règlement en une fois le jour de la prestation</option></select></label>
+        </div>
+        <div id="lTotals" class="totals"></div>
+      </div>
+
+      <div class="card">
+        <h2>Observations</h2>
+        <div class="grid">
+          <label class="w2">Véhicule(s)<input name="vehicules" placeholder="ex : camion 20 m³ – AB-123-CD"></label>
+          <label class="w2">Observations du chef d'équipe au chargement<textarea name="obsChef" rows="4"></textarea></label>
+          <label class="w2">Remarques du client (réserves, dommages constatés…)<textarea name="remarques" rows="4"></textarea></label>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- CLIENTS -->
+  <section id="view-clients" class="view hidden">
+    <div class="bar"><h1>Clients</h1>
+      <input type="search" id="qCli" placeholder="Rechercher un client…">
+      <button class="btn primary" id="newClient">+ Nouveau client</button></div>
+    <div class="card"><table id="cliTable"></table></div>
+  </section>
+
+  <!-- AGENDA -->
+  <section id="view-agenda" class="view hidden">
+    <div class="bar"><h1>Agenda</h1>
+      <button class="btn" id="mPrev">‹</button>
+      <strong id="mLabel" class="mlabel"></strong>
+      <button class="btn" id="mNext">›</button>
+      <button class="btn" id="mToday">Aujourd'hui</button></div>
+    <div class="agenda">
+      <div class="card"><div id="cal" class="cal"></div></div>
+      <div class="card">
+        <h2>Ajouter au planning</h2>
+        <form id="evForm" autocomplete="off" onsubmit="return false" class="stack">
+          <label>Nom du client<input name="client" list="clientList" placeholder="Tape son nom"></label>
+          <label>Date<input type="date" name="date"></label>
+          <label>Note (facultatif)<input name="note"></label>
+          <button class="btn primary" id="evAdd">Ajouter</button>
+          <p class="hint">Quand tu passes un devis en « Accepté », les dates de chargement et de livraison arrivent seules dans l'agenda.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGLAGES -->
+  <section id="view-settings" class="view hidden">
+    <div class="bar"><h1>Réglages</h1><button class="btn primary" id="sSave">Enregistrer</button></div>
+    <form id="setForm" autocomplete="off" onsubmit="return false">
+      <div class="card"><h2>Entreprise</h2>
+        <div class="grid">
+          <label>Nom<input name="company"></label>
+          <label>Adresse (ligne 1)<input name="address1"></label>
+          <label>Code postal et ville<input name="address2"></label>
+          <label>Ville d'émission (« TAVERNY LE »)<input name="city"></label>
+          <label>SIRET<input name="siret"></label>
+          <label>N° TVA<input name="tva"></label>
+          <label>Téléphone<input name="tel"></label>
+          <label>Email<input name="email"></label>
+          <label class="w2">IBAN (RIB)<input name="iban"></label>
+          <label class="w2">Slogan<input name="tagline"></label>
+          <label class="w2">Mentions légales (bas de page)<input name="legal"></label>
+        </div></div>
+      <div class="card"><h2>Numérotation et prix</h2>
+        <div class="grid">
+          <label>Prochain n° de devis<input type="number" name="nextDevis" min="1"></label>
+          <label>N° de facture de départ (seulement s'il n'y a aucune facture)<input type="number" name="nextFacture" min="1"></label>
+          <label>Prochain n° de lettre de voiture<input type="number" name="nextLettre" min="1"></label>
+          <label>TVA (%)<input type="number" name="tvaRate" step="0.1"></label>
+          <label>Acompte à la commande (%)<input type="number" name="acompte" step="1"></label>
+          <label>Taux d'assurance (%)<input name="taux"></label>
+          <label class="switch w2"><input type="checkbox" name="acompteEntreprise"><i></i>Demander l'acompte aux entreprises (choix par défaut)</label>
+          <label class="w2">Texte de la garantie<textarea name="garantieText" rows="2"></textarea></label>
+        </div></div>
+      <div class="card"><h2>Logo et signature</h2>
+        <div class="grid">
+          <label>Logo (image)<input type="file" accept="image/*" id="upLogo"></label>
+          <label>Signature de l'entreprise pour les devis (image, fond transparent de préférence ; sinon une signature au stylo « DJK » est dessinée)<input type="file" accept="image/*" id="upSign"></label>
+          <div class="w2"><img id="signPrev" class="prev" alt=""></div>
+        </div></div>
+      <div class="card"><h2>Sauvegarde</h2>
+        <p class="hint">Les données sont gardées dans ce navigateur. Fais une sauvegarde de temps en temps et avant de changer d'ordinateur.</p>
+        <button type="button" class="btn" id="exp">Télécharger une sauvegarde</button>
+        <label class="btn filebtn">Restaurer une sauvegarde<input type="file" accept=".json" id="imp" hidden></label>
+      </div>
+    </form>
+  </section>
+</main>
+
+<!-- APERCU -->
+<div id="modal" class="modal hidden">
+  <div class="modal-bar"><button class="btn" id="mClose">Fermer</button><button class="btn primary" id="mPdf">Télécharger le PDF</button></div>
+  <div class="modal-body"><div id="modalDoc" class="pdf"></div></div>
+</div>
+
+<div id="pdfHide"><div id="pdfRoot" class="pdf"></div></div>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/logo-data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

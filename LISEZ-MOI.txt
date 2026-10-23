@@ -1,0 +1,55 @@
+DJK Déménagement – Devis & Factures
+====================================
+
+LANCER L'APPLICATION (VS Code + terminal)
+1. Dézippe le dossier "djk" et ouvre-le dans VS Code (Fichier > Ouvrir le dossier).
+2. Ouvre le terminal de VS Code (Ctrl + ù) et tape UNE des deux commandes :
+      python3 -m http.server 5500        (ou : py -m http.server 5500 sous Windows)
+      npx serve -l 5500
+3. Ouvre http://localhost:5500 dans Chrome ou Edge.
+   (Autre solution : extension VS Code "Live Server" > clic droit sur index.html > Open with Live Server)
+
+IMPORTANT
+- Il faut une connexion internet : adresses (OpenStreetMap), kilomètres (OSRM) et génération du PDF (html2canvas + jsPDF).
+- Toujours ouvrir l'appli avec la même adresse (http://localhost:5500), sinon les données semblent disparaître :
+  elles sont gardées dans le navigateur. Fais une sauvegarde (Réglages > Télécharger une sauvegarde) régulièrement.
+
+PREMIERS PAS
+- Réglages : vérifie les infos de l'entreprise, ajoute ta signature (image), règle les prochains numéros.
+- Devis > Nouveau devis > Enregistrer ou "Télécharger le PDF" (2 pages : lettre + devis).
+- Devis > "Facturer" crée une facture préremplie. Statut "Accepté" = dates ajoutées à l'agenda.
+- Devis > "Lettre de voiture" crée la lettre préremplie (client, adresses, dates, prix). Elle est aussi
+  accessible dans le menu "Lettres de voiture" (création libre possible).
+- Entreprises : choisir la civilité "Société", taper le SIRET (14 chiffres) = nom et adresse se remplissent seuls
+  (API publique recherche-entreprises.api.gouv.fr, internet nécessaire).
+- Entreprises : le menu "Règlement" permet de ne pas demander d'acompte (paiement en une fois le jour de la prestation).
+  Le choix par défaut se règle dans Réglages.
+- Devis : "Bon pour accord" + signature au STYLO (image de signature des Réglages, sinon un "DJK" manuscrit est dessiné).
+  Il n'y a plus de cachet/tampon nulle part.
+- Lettre de voiture : pas de signature ni de tampon automatique côté entreprise. La case est laissée vide : c'est le chef de
+  chantier qui signe à la main à la fin des travaux.
+- "Paiement sans TVA" : case à cocher sur le devis, la facture et la lettre de voiture. Le prix saisi devient le prix à payer
+  (TVA = 0). Elle est recopiée quand on passe du devis à la facture / à la lettre de voiture.
+- Lettre de voiture > "Mode de paiement" :
+    * Virement / carte (avec facture) : comportement habituel (acompte 30 % calculé, ou montant saisi).
+    * Espèces (pas de facture) : TVA non applicable, on reste sur le prix HT. La lettre affiche l'acompte versé s'il y en a un
+      (champ "Acompte versé"), sinon "aucun", et le solde restant dû.
+- La lettre de voiture indique toujours le prix HT et le prix TTC (ou "TVA non applicable"), et l'étage au chargement et à la livraison
+  (repris du devis).
+- Facture : champ facultatif "Acompte déjà réglé" -> affiche "Reste à payer".
+- Numéros de facture : le prochain numéro = le plus grand numéro existant + 1. Ouvrir "Nouvelle facture" sans enregistrer ne change rien ;
+  si on supprime une facture, son numéro redevient libre. "N° de facture de départ" (Réglages) ne sert que s'il n'y a aucune facture.
+- Type de facture : complète / acompte / solde. Sur une facture liée à un devis, choisir "acompte" met le % d'acompte, "solde" met le reste à facturer.
+- Si le client a déjà une facture (cliquer "Facturer" sur son devis, ou choisir son nom dans "Nouvelle facture"), l'appli l'affiche
+  et propose une facture de solde : en espèces (sans TVA) ou par virement (avec TVA). Cas fréquent : acompte par virement avec TVA,
+  solde en espèces sans TVA.
+
+FICHIERS
+index.html        page principale
+css/style.css     apparence de l'application
+css/pdf.css       mise en page du devis et de la facture PDF
+js/app.js         tout le fonctionnement
+js/logo-data.js   logo DJK intégré
+
+NOTE : l'ancien texte de garantie contenant "HELVETIA" est remplacé automatiquement au premier lancement.
+Vérifie dans Réglages le texte de la garantie, le capital social et le prochain n° de lettre de voiture.

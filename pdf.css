@@ -1,0 +1,103 @@
+/* Conteneur caché utilisé pour fabriquer le PDF */
+#pdfHide{position:fixed;left:-10000px;top:0;width:794px;pointer-events:none}
+#pdfRoot{width:794px}
+
+/* Page A4 = 794 x 1123 px */
+.pdf .page{width:794px;min-height:1120px;padding:42px 62px 34px;background:#fff;color:#000;display:flex;flex-direction:column;position:relative}
+.pdf .page img.logo{height:56px;display:block}
+.pdf .push{margin-top:auto}
+.pdf *{box-sizing:border-box}
+
+/* ---------- DEVIS (police à empattements) ---------- */
+.pdf .devis{font-family:"Times New Roman",Times,serif;font-size:13.5px;line-height:1.35}
+.pdf .devis .head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.pdf .devis .ref{text-align:right;line-height:1.5}
+.pdf .devis .ref .big{font-size:14px}
+.pdf .devis hr{border:0;border-top:1.5px solid #0E2359;margin:16px 0 12px}
+.pdf .devis .mail{font-weight:700;text-decoration:underline;margin:0 0 14px}
+.pdf .devis h3{margin:14px 0 6px;font-size:14px}
+.pdf .devis p{margin:0 0 10px}
+.pdf .devis .sign-dir{text-align:right;font-weight:700;margin-top:18px}
+.pdf .devis .foot{border-top:1.5px solid #C9352D;margin-top:auto;padding-top:8px;text-align:center;font-style:italic;font-size:11.5px;color:#0E2359}
+.pdf .devis .foot b{color:#C9352D;display:block}
+.pdf .devis table{width:100%;border-collapse:collapse;margin-bottom:10px}
+.pdf .devis td,.pdf .devis th{border:1px solid #333;padding:5px 8px;vertical-align:top;text-align:left}
+.pdf .devis th{background:#e9edf6;color:#0E2359}
+.pdf .devis td.k{background:#f3f5fa;font-weight:700;width:16%}
+.pdf .devis .visit{margin:8px 0}
+.pdf .devis ul{margin:2px 0 8px;padding-left:20px}
+.pdf .devis .acc{font-size:12px;line-height:1.5}
+.pdf .devis .price td{font-size:13.5px}
+.pdf .devis .price .ttc td{font-weight:700;background:#e9edf6;color:#0E2359}
+.pdf .devis .price td.n{text-align:right;width:22%;white-space:nowrap}
+.pdf .devis .pay{margin:6px 0}
+.pdf .devis .pay td{text-align:center}
+.pdf .devis .sigs{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:10px 0 14px}
+.pdf .devis .sigs>div{border:1px solid #333;padding:7px 9px;min-height:112px;position:relative}
+
+/* ---------- FACTURE (police sans empattement) ---------- */
+.pdf .fact{font-family:"Open Sans","Segoe UI",Arial,sans-serif;font-size:13.5px;line-height:1.4;color:#222}
+.pdf .fact .top2{display:flex;justify-content:space-between;align-items:flex-start}
+.pdf .fact .title{font-size:25px;font-weight:300;margin-top:4px}
+.pdf .fact .me{margin-top:14px;line-height:1.45}
+.pdf .fact .cli{text-align:right;margin-top:6px;line-height:1.45}
+.pdf .fact .box{border:1px solid #d9d9d9;border-radius:8px;overflow:hidden}
+.pdf .fact .box .row{display:flex;border-bottom:1px solid #d9d9d9}
+.pdf .fact .box .row:last-child{border-bottom:0}
+.pdf .fact .box .row>div{padding:11px 14px}
+.pdf .fact .gray{background:#e6e6e6;text-align:center;font-weight:600}
+.pdf .fact .date{width:434px;margin:26px 0}
+.pdf .fact .date .row>div:first-child{width:50%}
+.pdf .fact .date .row>div:last-child{width:50%;text-align:center}
+.pdf .fact table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #d9d9d9;border-radius:8px;overflow:hidden}
+.pdf .fact th{background:#e6e6e6;padding:12px;font-weight:600;text-align:center;border-right:2px solid #fff}
+.pdf .fact td{padding:12px 14px;border-top:1px solid #d9d9d9;border-right:2px solid #f3f3f3;vertical-align:middle}
+.pdf .fact td.c{text-align:center;font-weight:600}
+.pdf .fact td .sub{color:#555}
+.pdf .fact .bottom{display:flex;justify-content:space-between;align-items:center;margin-top:34px}
+.pdf .fact .iban{font-size:14px;max-width:48%}
+.pdf .fact .iban img{max-height:70px;max-width:200px;display:block;margin-top:14px}
+.pdf .fact .tot{width:434px}
+.pdf .fact .tot .row>div:first-child{width:50%;text-align:center}
+.pdf .fact .tot .row>div:last-child{width:50%;text-align:right;background:#fff}
+.pdf .fact .tot .row.b>div{font-weight:700;background:#e6e6e6}
+.pdf .fact .foot{margin-top:auto;text-align:center;font-size:11.5px;color:#444;line-height:1.5;padding-top:30px}
+
+
+/* ---------- Mention « Bon pour accord » + signature au stylo (devis) ---------- */
+.pdf .seal{margin-top:6px}
+.pdf .seal .bpa{display:inline-block;font-family:Caveat,"Segoe Script","Brush Script MT",cursive;font-weight:600;font-size:24px;line-height:1.1;color:#1b2f86;transform:rotate(-4deg);margin:8px 0 0 6px}
+.pdf .seal .pen{display:block;font-family:Caveat,"Segoe Script","Brush Script MT",cursive;font-weight:600;font-size:44px;line-height:1;color:#1b2f86;transform:rotate(-6deg);margin:4px 0 0 34px}
+.pdf .seal .penline{display:block;margin:-2px 0 0 26px}
+.pdf .seal .sig{max-height:50px;max-width:170px;display:block;position:relative;margin:6px 0 0 20px}
+
+/* ---------- LETTRE DE VOITURE ---------- */
+.pdf .lv{font-family:"Times New Roman",Times,serif;font-size:13.5px;line-height:1.4}
+.pdf .lv .head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.pdf .lv .me{font-size:12.5px;line-height:1.35;margin-top:4px}
+.pdf .lv .rt{text-align:right;flex:1}
+.pdf .lv .rt .t{display:block;font-size:17px;font-weight:700;font-style:italic;color:#0E2359;border-bottom:1.5px solid #C9352D;padding-bottom:3px;margin-bottom:4px}
+.pdf .lv .rt .small{font-size:11px;font-style:italic}
+.pdf .lv .rt .b{font-weight:700;font-size:12.5px;line-height:1.3}
+.pdf .lv hr{border:0;border-top:1.5px solid #0E2359;margin:16px 0 14px}
+.pdf .lv .info{display:grid;grid-template-columns:1fr 1fr 1fr;row-gap:12px;padding:0 8px;margin-bottom:14px}
+.pdf .lv .exe{margin-bottom:14px}
+.pdf .lv table{width:100%;border-collapse:collapse;margin-bottom:14px}
+.pdf .lv th{background:#1F3864;color:#fff;padding:7px 8px;text-align:center;border:1px solid #1F3864}
+.pdf .lv td{border:1px solid #aaa;padding:7px 9px;vertical-align:top;width:50%}
+.pdf .lv p{margin:0 0 10px}
+.pdf .lv .red{color:#C9352D;font-weight:700}
+.pdf .lv .lbl{font-weight:700;margin:0 0 6px}
+.pdf .lv .box{border:1px solid #999;min-height:70px;padding:7px 9px;margin-bottom:14px;white-space:pre-wrap}
+.pdf .lv .sigs2{display:grid;grid-template-columns:1fr 1fr;border:1px solid #999;margin:6px 0 14px}
+.pdf .lv .sigs2>div{min-height:155px;padding:8px 10px;text-align:center}
+.pdf .lv .sigs2>div+div{border-left:1px solid #999}
+.pdf .lv .sigs2 small{font-size:11.5px}
+.pdf .lv .foot{border-top:1.5px solid #C9352D;margin-top:auto;padding-top:8px;text-align:center;font-style:italic;font-size:11.5px;color:#0E2359}
+.pdf .lv .foot b{color:#C9352D;display:block}
+
+/* Lettre de voiture hors IDF : 3 cases de signature */
+.pdf .lv .sigs3{display:grid;grid-template-columns:1fr 1fr 1fr;border:1px solid #999;margin:6px 0 14px}
+.pdf .lv .sigs3>div{min-height:140px;padding:8px 10px;text-align:center;font-size:12.5px}
+.pdf .lv .sigs3>div+div{border-left:1px solid #999}
+.pdf .lv .sigs3 small{font-size:11px}
